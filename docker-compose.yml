@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # The Database Service
+  postgres:
+    image: postgres:15
+    container_name: mdauthenticator-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: p0stgr3ss0f321
+      POSTGRES_DB: MDAuthdatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # The Node.js Application Service
+  app:
+    build: .
+    container_name: mdauthenticator-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:p0stgr3ss0f321@postgres:5432/MDAuthdatabase
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
